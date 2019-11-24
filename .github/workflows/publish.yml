@@ -1,0 +1,32 @@
+name: Publica imagen en el GitHub Package Registry
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+    steps:
+
+    - name: Copy Repo Files
+      uses: actions/checkout@master
+
+     #This Action Emits 2 Variables, IMAGE_SHA_NAME and IMAGE_URL 
+     #which you can reference in subsequent steps
+    - name: Publica imagen al GPR
+      uses: machine-learning-apps/gpr-docker-publish@master
+      id: docker
+      with:
+        IMAGE_NAME: 'hola-mundo-alpine'
+        TAG: 'latest'
+        DOCKERFILE_PATH: 'alpine/Dockerfile'
+        BUILD_CONTEXT: 'alpine/'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # This second step is illustrative and shows how to reference the 
+    # output variables.  This is completely optional.
+    - name: Muestra salida del paso anterior
+      run: |
+        echo "The name:tag of the Docker Image is: $VAR1"
+        echo "The docker image is hosted at $VAR2"
+      env:
+        VAR1: ${{ steps.docker.outputs.IMAGE_SHA_NAME }}
+        VAR2: ${{ steps.docker.outputs.IMAGE_URL }}
