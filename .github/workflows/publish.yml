@@ -1,17 +1,15 @@
-name: Publica imagen en el GitHub Package Registry
+name: Publica imágenes en el GitHub Package Registry
 on: push
 jobs:
   build:
     runs-on: ubuntu-latest 
     steps:
 
-    - name: Copy Repo Files
+    - name: Check out files
       uses: actions/checkout@master
 
-     #This Action Emits 2 Variables, IMAGE_SHA_NAME and IMAGE_URL 
-     #which you can reference in subsequent steps
     - name: Publica imagen al GPR
-      uses: machine-learning-apps/gpr-docker-publish@master
+      uses: JJ/gpr-docker-publish@master
       id: docker
       with:
         IMAGE_NAME: 'hola-mundo-alpine'
@@ -21,12 +19,24 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # This second step is illustrative and shows how to reference the 
-    # output variables.  This is completely optional.
-    - name: Muestra salida del paso anterior
-      run: |
-        echo "The name:tag of the Docker Image is: $VAR1"
-        echo "The docker image is hosted at $VAR2"
+    - name: Publica imagen al GPR
+      uses: JJ/gpr-docker-publish@master
+      id: docker
+      with:
+        IMAGE_NAME: 'hola-mundo-ubuntu'
+        TAG: 'latest'
+        DOCKERFILE_PATH: 'ubuntu/Dockerfile'
+        BUILD_CONTEXT: 'ubuntu/'
       env:
-        VAR1: ${{ steps.docker.outputs.IMAGE_SHA_NAME }}
-        VAR2: ${{ steps.docker.outputs.IMAGE_URL }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publica imagen al GPR
+      uses: JJ/gpr-docker-publish@master
+      id: docker
+      with:
+        IMAGE_NAME: 'hola-mundo-minideb'
+        TAG: 'latest'
+        DOCKERFILE_PATH: 'minideb/Dockerfile'
+        BUILD_CONTEXT: 'minideb/'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
